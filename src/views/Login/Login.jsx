@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
-import './Login.less'
+
+import { connect } from 'react-redux'
+import { loginImfActionSaga } from '../../Store/actionCreators'
+import './Login.css'
 class Login extends Component {
   constructor(prop) {
     super(prop)
@@ -22,8 +25,11 @@ class Login extends Component {
     e.preventDefault() // 这个很重要, 防止跳转
     this.setState({ requesting: true })
 
-    // const username = this.state.username;
-    // const password = this.state.password;
+    const username = this.state.username;
+    const password = this.state.password;
+    this.setState({ requesting: false })
+    this.props.loginImfSaga(username,password)
+
   }
   render() {
     return (
@@ -60,4 +66,19 @@ class Login extends Component {
   }
 }
 
-export default Login
+const mapDispatchToProps = dispatch => {
+  return {
+    loginImfSaga(username,password) {
+      const action = loginImfActionSaga(username,password)
+      dispatch(action)
+    }
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    list: state.list
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login)
