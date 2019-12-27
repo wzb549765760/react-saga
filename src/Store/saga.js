@@ -4,18 +4,9 @@ import { INIT_LIST_ITEM_SAGA, INIT_LIST_ITEM ,LOGIN_IMF,LOGIN_IMF_SAGA} from './
 
 import http from '../Util/http'
 
+import {loginPromise} from "./httpPromise/Login"
+
 let promist = function() {
-  return new Promise((resolve, reject) => {
-    http.get('/api/shop', {}, data => {
-      if (data.responeStatus === '0') {
-        resolve(data.data.list)
-      }
-    })
-  })
-}
-let loginPromist = function(username,password) {
-  debugger;
-  console.log(username,password);
   return new Promise((resolve, reject) => {
     http.get('/api/shop', {}, data => {
       if (data.responeStatus === '0') {
@@ -31,9 +22,8 @@ function* getListFun() {
     list
   })
 }
-function* getLoginImfFun(username,password) {
-  debugger;
-  const list = yield loginPromist(username,password)
+function* getLoginImfFun(obj) {
+  const list = yield loginPromise(obj.username,obj.password);
   yield put({
     type: LOGIN_IMF,
     list
