@@ -1,84 +1,91 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
+import {Form, Icon, Input, Button, Checkbox, message} from 'antd';
+import {connect} from 'react-redux'
+import {loginImfActionSaga} from '../../Store/actionCreators'
+import './Login.less'
+import http from "../../Util/http";
 
-import { connect } from 'react-redux'
-import { loginImfActionSaga } from '../../Store/actionCreators'
-import './Login.css'
 class Login extends Component {
-  constructor(prop) {
-    super(prop)
-    this.state = {
-      username: '', // 当前输入的用户名
-      password: '' // 当前输入的密码
+    constructor(prop) {
+        super(prop);
+        this.state = {};
     }
-  }
 
-  handleUsernameInput = e => {
-    this.setState({ username: e.target.value })
-  }
+    handleSubmit = e => {
+        e.preventDefault();
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                const key = 'updatable';
+                let {username, password} = values;
+                message.loading({content: '加载中', key});
+                http.post('/api/login/index', {username, password}, data => {
+                    if (data.responseCode === '0000') {
+                        message.success({content: '登录成功', key, duration: 2});
+                        this.props.history.push({ pathname: '/index'})
+                    } else {
+                        message.error({content: data.errorMsg, key, duration: 2});
+                    }
+                })
+            }
+        });
+    };
 
-  handlePasswordInput = e => {
-    this.setState({ password: e.target.value })
-  }
-
-  handleSubmit = async e => {
-    // async可以配合箭头函数
-    e.preventDefault() // 这个很重要, 防止跳转
-    this.setState({ requesting: true })
-
-    const username = this.state.username;
-    const password = this.state.password;
-    this.setState({ requesting: false })
-    this.props.loginImfSaga(username,password)
-
-  }
-  render() {
-    return (
-      <div id="loginDIV">
-        <div className="login">
-          <form onSubmit={this.handleSubmit}>
-            <input
-              className="login-input"
-              type="text"
-              value={this.state.username}
-              onChange={this.handleUsernameInput}
-              placeholder="用户名"
-              required="required"
-            />
-            <input
-              className="login-input"
-              type="password"
-              value={this.state.password}
-              onChange={this.handlePasswordInput}
-              placeholder="密码"
-              required="required"
-            />
-            <button
-              className="btn btn-primary btn-block btn-large"
-              type="submit"
-              disabled={this.state.requesting}
-            >
-              登录
-            </button>
-          </form>
-        </div>
-      </div>
-    )
-  }
+    render() {
+        const {getFieldDecorator} = this.props.form;
+        return (
+            <div id="loginDIV">
+                <div className="login">
+                    <Form onSubmit={this.handleSubmit} className="login-form">
+                        <Form.Item>
+                            {getFieldDecorator('username', {
+                                rules: [{required: true, message: '用户名不能为空'}],
+                            })(
+                                <Input
+                                    prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                                    placeholder="请输入用户名"
+                                />,
+                            )}
+                        </Form.Item>
+                        <Form.Item>
+                            {getFieldDecorator('password', {
+                                rules: [{required: true, message: '密码不能为空'}],
+                            })(
+                                <Input
+                                    prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                                    type="password"
+                                    placeholder="请输入密码"
+                                />,
+                            )}
+                        </Form.Item>
+                        <Form.Item>
+                            {getFieldDecorator('remember', {
+                                valuePropName: 'checked',
+                                initialValue: true,
+                            })(<Checkbox>Remember me</Checkbox>)}
+                            <Button type="primary" htmlType="submit" className="login-form-button">
+                                登录
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </div>
+            </div>
+        )
+    }
 }
 
 const mapDispatchToProps = dispatch => {
-  return {
-    loginImfSaga(username,password) {
-      const action = loginImfActionSaga(username,password)
-      dispatch(action)
+    return {
+        loginImfSaga(username, password) {
+            const action = loginImfActionSaga(username, password)
+            dispatch(action)
+        }
     }
-  }
 }
 
 const mapStateToProps = state => {
-  return {
-    list: state.list
-  }
+    return {
+        list: state.list
+    }
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login)
+const L = Form.create()(Login)
+export default connect(mapStateToProps, mapDispatchToProps)(L);
