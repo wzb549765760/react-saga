@@ -5,6 +5,8 @@ import {loginImfActionSaga} from '../../Store/actionCreators'
 import './Login.less'
 import http from "../../Util/http";
 
+import {setCookie} from "../../Util/reg";
+
 class Login extends Component {
     constructor(prop) {
         super(prop);
@@ -18,14 +20,21 @@ class Login extends Component {
                 const key = 'updatable';
                 let {username, password} = values;
                 message.loading({content: '加载中', key});
-                http.post('/api/login/index', {username, password}, data => {
-                    if (data.responseCode === '0000') {
-                        message.success({content: '登录成功', key, duration: 2});
-                        this.props.history.push({ pathname: '/index'})
-                    } else {
-                        message.error({content: data.errorMsg, key, duration: 2});
-                    }
-                })
+                setTimeout(()=>{
+                    setCookie("userName",username);
+                    setCookie("password",password);
+                    message.success({content: '登录成功', key, duration: 2});
+                    this.props.history.push({ pathname: '/index'})
+                },1000)
+                // http.post('/api/login/index', {username, password}, data => {
+                //     if (data.responseCode === '0000') {
+                //         alert(3)
+                //         message.success({content: '登录成功', key, duration: 2});
+                //         this.props.history.push({ pathname: '/index'})
+                //     } else {
+                //         message.error({content: data.errorMsg, key, duration: 2});
+                //     }
+                // })
             }
         });
     };

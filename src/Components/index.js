@@ -1,10 +1,11 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {Switch, Route, BrowserRouter} from 'react-router-dom'
+import {Switch, Route, BrowserRouter,Redirect} from 'react-router-dom'
 import {initListActionSaga} from '../Store/actionCreators'
-
 import Login from '../views/Login/Login'
 import Home from '../views/Home'
+
+import {getCookie} from "../Util/reg";
 
 class Index extends Component {
     constructor(prop) {
@@ -28,9 +29,14 @@ class Index extends Component {
                   <Route exact path="/login" component={Login}/>
                   <Route path="/" render={
                     (props)=>{
-                      return <Home {...props}/>
+                        if(getCookie("userName") && getCookie("password")){
+                            return <Home {...props}/>
+                        }else{
+                            return <Redirect to="/login"/>
+                        }
                     }
                   }/>
+                    {/*<Route path="/index" component={requireAuthentication(Home)} />*/}
                 </Switch>
               </BrowserRouter>
             </React.Fragment>

@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
-import {Layout, Menu, Breadcrumb, Icon} from 'antd';
+import {Layout, Menu, Breadcrumb, Icon, PageHeader, Button} from 'antd';
 import menuList from "../router/routeList"
 import {Link} from 'react-router-dom'
 import {Route} from 'react-router-dom'
 import Index from "./Index";
+import {delCookie} from "../Util/reg";
 import Card from "./Card";
 
 const {Header, Content, Footer, Sider} = Layout;
@@ -63,6 +64,12 @@ class Home extends Component {
         })
     };
 
+    outLogin() {
+        delCookie("userName");
+        delCookie("password");
+        this.props.history.push({pathname: '/login'})
+    }
+
 
     render() {
         let selectedKey = this.props.location.pathname;
@@ -81,13 +88,25 @@ class Home extends Component {
                     </Menu>
                 </Sider>
                 <Layout>
-                    <Header style={{background: '#fff', padding: 0}}/>
-                    <Content style={{margin: '0 16px',overflow:'auto',height:"calc( vh - 64px )"}}>
+                    <Header style={{background: '#fff', padding: 0}}>
+                        <PageHeader
+                            style={{
+                                border: '1px solid rgb(235, 237, 240)',
+                            }}
+                            onBack={() => {
+                                window.history.back()
+                            }}
+                            extra={[<Button onClick={() => {
+                                this.outLogin()
+                            }}>退出登录</Button>]}
+                            title="返回"/>
+                    </Header>
+                    <Content style={{margin: '0 16px', overflow: 'auto', height: "calc( vh - 64px )"}}>
                         <Breadcrumb style={{margin: '16px 0'}}>
-                            {/*<Breadcrumb.Item>User</Breadcrumb.Item>*/}
-                            {/*<Breadcrumb.Item>Bill</Breadcrumb.Item>*/}
+                            <Breadcrumb.Item>User</Breadcrumb.Item>
+                            <Breadcrumb.Item>Bill</Breadcrumb.Item>
                         </Breadcrumb>
-                        <div style={{padding: 24, background: '#fff',height:"calc( vh - 135px )"}}>
+                        <div style={{padding: 24, background: '#fff', height: "calc( vh - 135px )"}}>
                             <Route exact path="/index" component={Index}/>
                             <Route path="/card" component={Card}/>
                         </div>
