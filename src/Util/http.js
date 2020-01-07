@@ -58,6 +58,35 @@ function checkStatus(response) {
 }
 
 export default {
+  formData(options){
+    var xmlhttp,data;
+    debugger;
+    if(window.XMLHttpRequest){
+      xmlhttp = new XMLHttpRequest();
+    }else{
+      // eslint-disable-next-line no-undef
+      xmlhttp = new ActiveXObject('Microsoft.XMLHTTP')
+    }
+
+    var method = (options.method || 'GET').toUpperCase(),
+        url = options.url,
+        async = options.async || 'false';
+
+    var onReady = function(callback){
+      xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState === 4 && xmlhttp.status === 200){
+          callback(JSON.parse(xmlhttp.responseText));
+        }
+      }
+    };
+    data = new FormData();
+    data.append("data",JSON.stringify(options.data));
+    xmlhttp.open(method,(baseUrl+url),async);
+    // xmlhttp.setRequestHeader('Content-Type','application/form-data');
+    onReady(options.callback);
+    xmlhttp.send(data);
+
+  },
   post(url, data, rollBack) {
     return axios({
       method: 'post',
@@ -70,8 +99,8 @@ export default {
       headers: {
         'Access-Control-Allow-Origin': '*',
         // 'Access-Control-Max-Age': '1209600',
-        // 'Content-Type': 'multipart/form-data'
-        'Content-Type': 'application/json'
+        'Content-Type': 'multipart/form-data'
+        // 'Content-Type': 'application/json'
       }
     })
       .then(response => {

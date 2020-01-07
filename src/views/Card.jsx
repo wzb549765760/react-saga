@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {Upload, Icon, message, Input, Button, Form} from 'antd';
 import '../static/less/card.less'
 import http from "../Util/http";
+import dataVerification from "../Util/DataVerification"
 
 let baseUrl = "http://192.168.8.29:8001/oms";
 
@@ -80,22 +81,38 @@ class Card extends Component {
                 const key = 'updatable';
                 let {username, idCard, bankNum, mobile} = values;
                 message.loading({content: '加载中', key});
-                let parmss = {
-                    idCardFront:imageUrl,
-                    bankCardFront:imageUrl1,
-                    name:username,
-                    idCardNo:idCard,
-                    bankCardNo:bankNum,
-                    mobile:mobile,
-                }
-                http.post('/mcht/card/cert', parmss, data => {
-                    if (data.respCode === '000000') {
-                        message.success({content: '登录成功', key, duration: 2});
-                        this.props.history.push({pathname: '/index'})
-                    } else {
-                        message.error({content: data.respMsg, key, duration: 2});
+                http.formData({
+                    data: {
+                        idCardFront: imageUrl,
+                        bankCardFront: imageUrl1,
+                        name: username,
+                        idCardNo: idCard,
+                        bankCardNo: bankNum,
+                        mobile: mobile,
+                    },
+                    method: "post",
+                    url: "/mcht/card/cert",
+                    callback: (data) => {
+                        debugger;
+                        if (data.respCode === '000000') {
+                            message.success({content: '登录成功', key, duration: 2});
+                            this.props.history.push({pathname: '/index'})
+                        } else {
+                            message.error({content: data.respMsg, key, duration: 2});
+                        }
                     }
-                })
+                });
+                //
+                // http.post('/mcht/card/cert', {
+                //     data: parmss
+                // }, data => {
+                //     if (data.respCode === '000000') {
+                //         message.success({content: '登录成功', key, duration: 2});
+                //         this.props.history.push({pathname: '/index'})
+                //     } else {
+                //         message.error({content: data.respMsg, key, duration: 2});
+                //     }
+                // })
             }
         });
     };
@@ -164,7 +181,11 @@ class Card extends Component {
                     <Form onSubmit={this.handleSubmit} className="login-form">
                         <Form.Item>
                             {getFieldDecorator('username', {
-                                rules: [{required: true, message: '姓名不能为空'}],
+                                rules: [
+                                    {
+                                        validator: (rule, value, callback) => dataVerification.checkName(rule, value, callback)
+                                    }
+                                ],
                             })(
                                 <Input
                                     placeholder="请输入姓名"
@@ -173,7 +194,9 @@ class Card extends Component {
                         </Form.Item>
                         <Form.Item>
                             {getFieldDecorator('idCard', {
-                                rules: [{required: true, message: '身份证号不能为空'}],
+                                rules: [{
+                                    validator: (rule, value, callback) => dataVerification.checkIdCardNo(rule, value, callback)
+                                }],
                             })(
                                 <Input
                                     placeholder="请输入身份证号"
@@ -182,7 +205,9 @@ class Card extends Component {
                         </Form.Item>
                         <Form.Item>
                             {getFieldDecorator('bankNum', {
-                                rules: [{required: true, message: '银行卡号不能为空'}],
+                                rules: [{
+                                    validator: (rule, value, callback) => dataVerification.checkBankCardNo(rule, value, callback)
+                                }],
                             })(
                                 <Input
                                     placeholder="请输入银行卡号"
@@ -191,7 +216,11 @@ class Card extends Component {
                         </Form.Item>
                         <Form.Item>
                             {getFieldDecorator('mobile', {
-                                rules: [{required: true, message: '手机号不能为空'}],
+                                rules: [
+                                    {
+                                        validator: (rule, value, callback) => dataVerification.checkMobile(rule, value, callback)
+                                    }
+                                ]
                             })(
                                 <Input
                                     placeholder="请输入手机号"

@@ -80,7 +80,7 @@ function checkValByExp(val, regex) {
 }
 //校验是否为空
 function checkVal(v) {
-  if(v == "" || v == null || v == undefined) {
+  if(v === "" || v === null || v === undefined) {
     return false;
   }
   return true;

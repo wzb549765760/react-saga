@@ -3,7 +3,7 @@ import {Form, Icon, Input, Button, Checkbox, message} from 'antd';
 import {connect} from 'react-redux'
 import {loginImfActionSaga} from '../../Store/actionCreators'
 import './Login.less'
-import http from "../../Util/http";
+// import http from "../../Util/http";
 
 import {setCookie} from "../../Util/reg";
 
