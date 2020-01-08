@@ -1,11 +1,10 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Switch, Route, BrowserRouter,Redirect} from 'react-router-dom'
-import {initListActionSaga} from '../Store/actionCreators'
 import Login from '../views/Login/Login'
 import Home from '../views/Home'
 
-import {getCookie} from "../Util/reg";
+// import {getCookie} from "../Util/reg";
 
 class Index extends Component {
     constructor(prop) {
@@ -13,15 +12,12 @@ class Index extends Component {
         this.state = {}
     }
 
-    getList() {
-        this.props.initListSaga()
-    }
-
     componentWillMount() {
         // this.getList()
     }
 
     render() {
+        let{loginImf} = this.props;
         return (
             <React.Fragment>
               <BrowserRouter>
@@ -29,7 +25,7 @@ class Index extends Component {
                   <Route exact path="/login" component={Login}/>
                   <Route path="/" render={
                     (props)=>{
-                        if(getCookie("userName") && getCookie("password")){
+                        if(loginImf){
                             return <Home {...props}/>
                         }else{
                             return <Redirect to="/login"/>
@@ -49,17 +45,14 @@ class Index extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        initListSaga() {
-            const action = initListActionSaga()
-            dispatch(action)
-        }
+
     }
-}
+};
 
 const mapStateToProps = state => {
     return {
-        list: state.list
+        loginImf: state.loginImf
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index)

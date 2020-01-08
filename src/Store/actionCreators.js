@@ -1,10 +1,15 @@
-import { INIT_LIST_ITEM_SAGA,LOGIN_IMF_SAGA } from './actionTypes'
-export const initListActionSaga = () => ({
-  type: INIT_LIST_ITEM_SAGA
-})
+import {LOGIN_IMF_SAGA, OUT_LOGIN_SAGA} from './actionTypes'
 
-export const loginImfActionSaga = (username,password) => ({
-  type: LOGIN_IMF_SAGA,
-  username,
-  password
-})
+/*缓存登录信息*/
+export const loginImfActionSaga = (username, password, token) => ({
+    type: LOGIN_IMF_SAGA,
+    username,
+    password,
+    token
+});
+
+/*退出登录 清空登录信息*/
+export const outLoginActionSaga = (token) => ({
+    type: OUT_LOGIN_SAGA,
+    token
+});

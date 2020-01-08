@@ -3,8 +3,9 @@ import {Upload, Icon, message, Input, Button, Form} from 'antd';
 import '../static/less/card.less'
 import http from "../Util/http";
 import dataVerification from "../Util/DataVerification"
+import {connect} from "react-redux";
 
-let baseUrl = "http://192.168.8.29:8001/oms";
+let baseUrl = "http://192.168.9.65:8001/oms";
 // let baseUrl = baseUrl1.getBaseUrl();
 function beforeUpload(file) {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -82,20 +83,23 @@ class Card extends Component{
                 let {username, idCard, bankNum, mobile} = values;
                 message.loading({content: '加载中', key});
                 http.formData({
-                    data: {
-                        idCardFront: imageUrl,
-                        bankCardFront: imageUrl1,
-                        name: username,
-                        idCardNo: idCard,
-                        bankCardNo: bankNum,
-                        mobile: mobile,
+                    token:this.props.loginImf.token,
+                    parmas: {
+                        data:{
+                            idCardFront: imageUrl,
+                            bankCardFront: imageUrl1,
+                            name: username,
+                            idCardNo: idCard,
+                            bankCardNo: bankNum,
+                            mobile: mobile
+                        },
+                        token:this.props.loginImf.token
                     },
                     method: "post",
                     url: "/mcht/card/cert",
                     callback: (data) => {
-                        debugger;
                         if (data.respCode === '000000') {
-                            message.success({content: '登录成功', key, duration: 2});
+                            message.success({content: '认证成功', key, duration: 2});
                             this.props.history.push({pathname: '/index'})
                         } else {
                             message.error({content: data.respMsg, key, duration: 2});
@@ -130,6 +134,13 @@ class Card extends Component{
                 <div className="ant-upload-text">上传身份证反面照片</div>
             </div>
         );
+        let propsObj = {
+            action:baseUrl + '/mcht/imge/upload',
+            data:{
+                token:this.props.loginImf.token
+            }
+        };
+        console.log(propsObj);
         const {imageUrl, imageUrl1} = this.state;
         const {getFieldDecorator} = this.props.form;
         return (
@@ -147,7 +158,7 @@ class Card extends Component{
                                 listType="picture-card"
                                 className="avatar-uploader"
                                 showUploadList={false}
-                                action={baseUrl + '/mcht/imge/upload'}
+                                {...propsObj}
                                 beforeUpload={beforeUpload}
                                 onChange={this.handleChange}
                             >
@@ -166,7 +177,7 @@ class Card extends Component{
                                 listType="picture-card"
                                 className="avatar-uploader"
                                 showUploadList={false}
-                                action={baseUrl + '/mcht/imge/upload'}
+                                {...propsObj}
                                 beforeUpload={beforeUpload}
                                 onChange={this.handleChange1}
                             >
@@ -239,5 +250,16 @@ class Card extends Component{
     }
 }
 
+const mapDispatchToProps = dispatch => {
+    return {
+
+    }
+};
+
+const mapStateToProps = state => {
+    return {
+        loginImf: state.loginImf
+    }
+};
 const C = Form.create()(Card)
-export default C;
+export default connect(mapStateToProps, mapDispatchToProps)(C)

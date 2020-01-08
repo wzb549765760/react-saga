@@ -3,12 +3,13 @@ import {Form, Icon, Input, Button, Checkbox, message} from 'antd';
 import {connect} from 'react-redux'
 import {loginImfActionSaga} from '../../Store/actionCreators'
 import './Login.less'
-// import http from "../../Util/http";
+import http from "../../Util/http";
 
 import {setCookie} from "../../Util/reg";
 
 class Login extends Component {
     constructor(prop) {
+        console.log(prop.store);
         super(prop);
         this.state = {};
     }
@@ -20,21 +21,31 @@ class Login extends Component {
                 const key = 'updatable';
                 let {username, password} = values;
                 message.loading({content: '加载中', key});
-                setTimeout(()=>{
-                    setCookie("userName",username);
-                    setCookie("password",password);
-                    message.success({content: '登录成功', key, duration: 2});
-                    this.props.history.push({ pathname: '/index'})
-                },1000)
-                // http.post('/api/login/index', {username, password}, data => {
-                //     if (data.responseCode === '0000') {
-                //         alert(3)
-                //         message.success({content: '登录成功', key, duration: 2});
-                //         this.props.history.push({ pathname: '/index'})
-                //     } else {
-                //         message.error({content: data.errorMsg, key, duration: 2});
-                //     }
-                // })
+                // this.props.loginImfSaga(username, password, "123123123123");
+                // message.success({content: '登录成功', key, duration: 2});
+                // this.props.history.push({pathname: '/index'});
+                // return;
+                http.formData({
+                    parmas: {
+                        data: {
+                            user: username,
+                            password: password,
+                            name: username,
+                            gid: "1",
+                        }
+                    },
+                    method: "post",
+                    url: "/api/entry/login",
+                    callback: (data) => {
+                        if (data.respCode === '000000') {
+                            this.props.loginImfSaga(username, password, data.data.token);
+                            message.success({content: '登录成功', key, duration: 2});
+                            this.props.history.push({pathname: '/index'})
+                        } else {
+                            message.error({content: data.respMsg, key, duration: 2});
+                        }
+                    }
+                });
             }
         });
     };
@@ -84,8 +95,8 @@ class Login extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        loginImfSaga(username, password) {
-            const action = loginImfActionSaga(username, password)
+        loginImfSaga(username, password, token) {
+            const action = loginImfActionSaga(username, password, token)
             dispatch(action)
         }
     }

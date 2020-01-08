@@ -4,8 +4,10 @@ import menuList from "../router/routeList"
 import {Link} from 'react-router-dom'
 import '../static/less/Home.less'
 import {Route} from 'react-router-dom'
-import {delCookie} from "../Util/reg";
+// import {delCookie} from "../Util/reg";
 import loadable from "../Util/loadable";
+import {connect} from "react-redux";
+import {outLoginActionSaga} from "../Store/actionCreators";
 // import Card from "./Card";
 // import Index from "./Index";
 const Card = loadable(() => import('./Card'));
@@ -70,9 +72,8 @@ class Home extends Component {
     };
 
     outLogin() {
-        delCookie("userName");
-        delCookie("password");
-        this.props.history.push({pathname: '/login'})
+        this.props.outLoginSaga(this.props.loginImf.token);
+        // this.props.history.push({pathname: '/login'})
     }
 
 
@@ -126,4 +127,20 @@ class Home extends Component {
     }
 }
 
-export default Home;
+const mapDispatchToProps = dispatch => {
+    return {
+        outLoginSaga(token){
+            debugger
+            const action = outLoginActionSaga(token);
+            dispatch(action);
+        }
+    }
+};
+
+const mapStateToProps = state => {
+    return {
+        loginImf: state.loginImf
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home)
