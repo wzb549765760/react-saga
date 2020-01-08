@@ -4,11 +4,12 @@ import menuList from "../router/routeList"
 import {Link} from 'react-router-dom'
 import '../static/less/Home.less'
 import {Route} from 'react-router-dom'
-import Index from "./Index";
 import {delCookie} from "../Util/reg";
-import Card from "./Card";
-
-
+import loadable from "../Util/loadable";
+// import Card from "./Card";
+// import Index from "./Index";
+const Card = loadable(() => import('./Card'));
+const Index = loadable(() => import('./Index'));
 
 const {Header, Content, Footer, Sider} = Layout;
 const {SubMenu} = Menu;

@@ -5,7 +5,7 @@ import http from "../Util/http";
 import dataVerification from "../Util/DataVerification"
 
 let baseUrl = "http://192.168.8.29:8001/oms";
-
+// let baseUrl = baseUrl1.getBaseUrl();
 function beforeUpload(file) {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
@@ -18,7 +18,7 @@ function beforeUpload(file) {
     return isJpgOrPng && isLt2M;
 }
 
-class Card extends Component {
+class Card extends Component{
     constructor(prop) {
         super(prop);
         this.state = {
